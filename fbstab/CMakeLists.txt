@@ -38,3 +38,8 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	add_test(mpc_unit_tests mpc_unit_tests)
 endif()
 
+# MATLAB interface
+if(FBSTAB_MATLAB)
+	add_subdirectory(matlab)
+endif()
+

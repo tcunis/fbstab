@@ -1,0 +1,3 @@
+[submodule "fbstab/matlab/mexutils"]
+	path = fbstab/matlab/mexutils
+	url = https://github.com/tcunis/matlab-mexutils.git

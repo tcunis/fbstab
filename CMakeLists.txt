@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.10)
 project(fbstab)
 enable_testing()
 
+# Option: build MATLAB interface
+option(FBSTAB_MATLAB "Build MATLAB interface for FBstab.")
+
 # Export include directory.
 set(ENV{FBSTAB_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -28,5 +31,9 @@ endif()
 
 # The cmake build system isn't used for debugging,
 # so default to an optimized build.
-add_compile_options(-O3 -g0 -std=c++11) 
+add_compile_options(-O3 -g0)
+if(NOT FBSTAB_MATLAB)
+    # (tcunis@umich.edu): this option clashes with mex toolchain.
+    add_compile_options(-std=c++11)
+endif()
 add_subdirectory(fbstab)
