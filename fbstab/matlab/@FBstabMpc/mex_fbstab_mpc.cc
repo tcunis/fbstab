@@ -39,14 +39,13 @@ void mexFBstabMpc::Solve(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nr
     throw mexRuntimeError(get_classname() + ":invalidArguments", "Second argument of Solve method must be FBstab::Variable object.");
   
   // else
-  plhs[1] = mxDuplicateArray(prhs[1]);
-  
   mexFBstabMpc::ProblemData qp(prhs[0]);
-  mexFBstabMpc::Variable x(plhs[1], qp.N, qp.nx, qp.nu, qp.nc);
+  mexFBstabMpc::Variable x(prhs[1], qp.N, qp.nx, qp.nu, qp.nc);
   
   mexSolverOut sout = _solver.Solve<FBstabMpc::Variable>(qp, &x);
   
   plhs[0] = sout;
+  plhs[1] = x; //mxDuplicateArray(prhs[1]);
 }
 
 mexFBstabMpc::ProblemData::ProblemData(const mxArray* pmx)
@@ -110,8 +109,8 @@ mexFBstabMpc::ProblemData::ProblemData(const mxArray* pmx)
     x0 = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_x0), nx);
 }
 
-mexFBstabMpc::Variable::Variable(const mxArray* pmx, int N, int nx, int nu, int nc)
-: FBstabMpc::Variable(N, nx, nu, nc)
+mexFBstabMpc::Variable::Variable(const mxArray* _prhs, int _N, int _nx, int _nu, int _nc)
+: FBstabMpc::Variable(_N, _nx, _nu, _nc), pmx(_prhs)
 {
   if ( !mxIsLogicalScalarTrue(mxGetProperty(pmx,0,"isvalid")) )
       throw mexRuntimeError(get_classname() + ":invalidArguments", "Invalid solution structure.");
@@ -132,3 +131,31 @@ mexFBstabMpc::Variable::Variable(const mxArray* pmx, int N, int nx, int nu, int 
   v = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_v), _nv);
   y = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_y), _nv);
 }
+
+mexFBstabMpc::Variable::operator mxArray* () const
+{
+  mxArray* _plhs = mxDuplicateArray(pmx);
+  
+  int _nz, _nl, _nv;
+  _nz = *mxGetInt32s(mxGetProperty(pmx,0,"nz"));
+  _nl = *mxGetInt32s(mxGetProperty(pmx,0,"nl"));
+  _nv = *mxGetInt32s(mxGetProperty(pmx,0,"nv"));
+  
+  mxArray* _z = mxGetProperty(_plhs,0,"z");
+  mxArray* _l = mxGetProperty(_plhs,0,"l");
+  mxArray* _v = mxGetProperty(_plhs,0,"v");
+  mxArray* _y = mxGetProperty(_plhs,0,"y");
+  
+  Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_z), _nz) = z;
+  Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_l), _nl) = l;
+  Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_v), _nv) = v;
+  Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_y), _nv) = y;
+  
+  mxSetProperty(_plhs,0,"z",_z);
+  mxSetProperty(_plhs,0,"l",_l);
+  mxSetProperty(_plhs,0,"v",_v);
+  mxSetProperty(_plhs,0,"y",_y);
+  
+  return _plhs;
+}
+

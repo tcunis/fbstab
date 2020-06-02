@@ -35,6 +35,11 @@ public:
   
   struct Variable : public fbstab::FBstabMpc::Variable {
     Variable(const mxArray*, int N, int nx, int nu, int nc);
+    
+    operator mxArray*() const;
+    
+    private:
+      const mxArray* pmx;
   };
 
   static std::string get_classname() { return "FBstabMpc"; }
