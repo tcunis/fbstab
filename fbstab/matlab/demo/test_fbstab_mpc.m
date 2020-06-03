@@ -25,24 +25,23 @@ data.x0 = simin.x0;
 
 sz = [data.N; data.nx; data.nu; data.nc];
 
-opts.display_level = 2;
-
 % create initial conditions
 x = FBstabMpc.Variable(sz);
 
 solver = FBstabMpc(sz);
 
-'implicit pcg'
-opts.linear_solver = 'pcg';
+opts = solver.DefaultOptions;
+
 tic
 [out,xopt] = solver.Solve(data,x);
 toc
+disp(out)
+disp(xopt.z(1))
 
-% 'ricatti'
-% opts.linear_solver = 'ricatti';
-% tic
-% [xopt,out] = fbstab_mpc(x,mpc,opts);
-% toc
-
-
-
+opts.display_level = 2;
+solver.UpdateOptions(opts);
+tic
+[out,xopt] = solver.Solve(data,x);
+toc
+disp(out)
+disp(xopt.z(1))

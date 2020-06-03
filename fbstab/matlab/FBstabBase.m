@@ -40,11 +40,26 @@ classdef (Abstract) FBstabBase < handle
          obj.mexfcn(obj, varargin{:});
       end
       
-      function varargout = Solve(obj,varargin)
+      function [sout,x] = Solve(obj,varargin)
           % solve problem
-          varargout = cell(1,nargout);
-          [varargout{:}] = obj.mexfcn(obj, 'Solve', varargin{:});
+          [sout,x] = obj.mexfcn(obj, 'Solve', varargin{:});
       end
+      
+      function UpdateOptions(obj,varargin)
+          % update options
+          obj.mexfcn(obj, 'UpdateOptions', varargin{:});
+      end
+      
+      function options = DefaultOptions(obj,varargin)
+          % default options
+          options = obj.mexfcn(obj, 'DefaultOptions', varargin{:});
+      end
+
+      function options = ReliableOptions(obj,varargin)
+          % reliable options
+          options = obj.mexfcn(obj, 'ReliableOptions', varargin{:});
+      end
+
       
       function delete(obj)
          % destroy the mex backend

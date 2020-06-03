@@ -77,6 +77,24 @@ methods
         % @return       Summary of the optimizer output, see fbstab_algorithm.h.
         [sout,x] = obj.Solve@FBstabBase(qp,x);
     end
+    
+    function UpdateOptions(obj,options)
+        % Allows for setting of solver options. 
+        %
+        % See ALGORITHMPARAMETERS for a list of adjustable options.
+        % @param[in] option New option struct
+        obj.UpdateOptions@FBstabBase(options);
+    end
+    
+    function options = DefaultOptions(obj)
+        % Returns default settings, recommended for most problems.
+        options = FBstabMpc.Options.fromstruct(obj.DefaultOptions@FBstabBase);
+    end
+    
+    function options = ReliableOptions(obj)
+        % Settings for increased reliability for use on hard problems.
+        options = FBstabMpc.Options.fromstruct(obj.ReliableOptions@FBstabBase);
+    end
 end
 
 end

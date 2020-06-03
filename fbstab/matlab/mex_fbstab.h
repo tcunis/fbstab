@@ -13,6 +13,11 @@ public:
   
 protected:
   virtual void Solve(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) = 0;
+  
+  virtual void UpdateOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) = 0;
+  
+  virtual void DefaultOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) = 0;
+  virtual void ReliableOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) = 0;
 };
 
 struct mexSolverOut : public fbstab::SolverOut
@@ -22,6 +27,14 @@ struct mexSolverOut : public fbstab::SolverOut
   operator mxArray*() const;
   
   const char* eflag_str() const;
+};
+
+struct mexAlgorithmParameters : virtual public fbstab::AlgorithmParameters
+{
+  mexAlgorithmParameters(const fbstab::AlgorithmParameters&);
+  mexAlgorithmParameters(const mxArray*);
+  
+  operator mxArray*() const;
 };
 
 class mexFBstabMpc : public mexFBstabBase
@@ -41,6 +54,11 @@ public:
     private:
       const mxArray* pmx;
   };
+  
+  struct Options : public fbstab::FBstabMpc::Options, public mexAlgorithmParameters {
+    Options(const fbstab::FBstabMpc::Options& opts) : mexAlgorithmParameters(opts) {}
+    Options(const mxArray* prhs) : mexAlgorithmParameters(prhs) {}
+  };
 
   static std::string get_classname() { return "FBstabMpc"; }
   
@@ -49,6 +67,11 @@ public:
 protected:
   void Solve(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
   
+  void UpdateOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+  
+  void DefaultOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+  void ReliableOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+  
 private:
-  fbstab::FBstabMpc _solver;
+  fbstab::FBstabMpc solver_;
 };

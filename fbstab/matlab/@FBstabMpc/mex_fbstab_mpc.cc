@@ -16,7 +16,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 /** mexFBstabMpc */
 mexFBstabMpc::mexFBstabMpc(const mxArray* mxObj, int nrhs, const mxArray* prhs[])
 : mexFBstabBase(),
-  _solver(
+  solver_(
     GetMX(int,0,nrhs,prhs),
     GetMX(int,1,nrhs,prhs),
     GetMX(int,2,nrhs,prhs),
@@ -30,22 +30,63 @@ mexFBstabMpc::mexFBstabMpc(const mxArray* mxObj, int nrhs, const mxArray* prhs[]
 void mexFBstabMpc::Solve(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
   if ( nrhs != 2 )
-    throw mexRuntimeError(get_classname() + ":invalidArguments", "Solve method requires two (2) input arguments.");
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "Solve method expects two (2) input arguments.");
   if ( nlhs != 2 )
-    throw mexRuntimeError(get_classname() + ":invalidArguments", "Solve method requires two (2) output argument.");
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "Solve method expects two (2) output argument.");
   if ( !mxIsClass(prhs[0],"FBstabMpc.ProblemData") )
-    throw mexRuntimeError(get_classname() + ":invalidArguments", "First argument of Solve method must be FBstab::ProblemData object.");
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "First argument of Solve method must be FBstabMpc.ProblemData object.");
   if ( !mxIsClass(prhs[1],"FBstabMpc.Variable") )
-    throw mexRuntimeError(get_classname() + ":invalidArguments", "Second argument of Solve method must be FBstab::Variable object.");
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "Second argument of Solve method must be FBstabMpc.Variable object.");
   
   // else
   mexFBstabMpc::ProblemData qp(prhs[0]);
   mexFBstabMpc::Variable x(prhs[1], qp.N, qp.nx, qp.nu, qp.nc);
   
-  mexSolverOut sout = _solver.Solve<FBstabMpc::Variable>(qp, &x);
+  mexSolverOut sout = solver_.Solve<FBstabMpc::Variable>(qp, &x);
   
   plhs[0] = sout;
   plhs[1] = x; //mxDuplicateArray(prhs[1]);
+}
+
+void mexFBstabMpc::UpdateOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+{
+  if ( nrhs != 1 )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "UpdateOptions expects one (1) input argument.");
+  if ( nlhs != 0 )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "UpdateOptions does not expect output arguments.");
+  if ( !mxIsClass(prhs[0],"FBstabMpc.Options") )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "First argument of UpdateOptions must be FBstabMpc.Options object.");
+    
+  // else
+  mexFBstabMpc::Options options(prhs[0]);
+  
+  solver_.UpdateOptions(options);
+}
+
+void mexFBstabMpc::ReliableOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+{
+  if ( nrhs != 0 )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "ReliableOptions does not expect input arguments.");
+  if ( nlhs != 1 )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "ReliableOptions expects one (1) output argument.");
+  
+  // else
+  mexFBstabMpc::Options options = solver_.ReliableOptions();
+  
+  plhs[0] = options;
+}
+
+void mexFBstabMpc::DefaultOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+{
+  if ( nrhs != 0 )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "DefaultOptions does not expect input arguments.");
+  if ( nlhs != 1 )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "DefaultOptions expects one (1) output argument.");
+  
+  // else
+  mexFBstabMpc::Options options = solver_.DefaultOptions();
+  
+  plhs[0] = options;
 }
 
 mexFBstabMpc::ProblemData::ProblemData(const mxArray* pmx)
