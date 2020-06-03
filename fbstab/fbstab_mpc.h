@@ -116,7 +116,7 @@ class FBstabMpc {
   };
 
   /** A Structure to hold options */
-  struct Options : public AlgorithmParameters {};
+  struct Options : virtual public AlgorithmParameters {};
 
   /**
    * Allocates workspaces needed when solving (1).

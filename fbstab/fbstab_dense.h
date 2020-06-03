@@ -103,7 +103,7 @@ class FBstabDense {
   };
 
   /** A Structure to hold options */
-  struct Options : public AlgorithmParameters {};
+  struct Options : virtual public AlgorithmParameters {};
 
   /**
    * Allocates needed workspace given the dimensions of the QPs to
