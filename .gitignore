@@ -1,6 +1,6 @@
 # temporary files
 .DS_Store
-.m~
+*.m~
 
 # Bazel build artifacts (symlinks)
 /bazel-*
