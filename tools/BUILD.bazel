@@ -12,5 +12,7 @@ fbstab_cc_library(
 	hdrs = [
 	"copyable_macros.h",
 	"utilities.h",
+	"matrix_sequence.h",
+	"output_stream.h",
 	],
 )
