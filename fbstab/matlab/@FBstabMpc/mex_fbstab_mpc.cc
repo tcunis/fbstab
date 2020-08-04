@@ -42,7 +42,7 @@ void mexFBstabMpc::Solve(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nr
   mexFBstabMpc::ProblemData qp(prhs[0]);
   mexFBstabMpc::Variable x(prhs[1], qp.N, qp.nx, qp.nu, qp.nc);
   
-  mexSolverOut sout = solver_.Solve<FBstabMpc::Variable>(qp, &x);
+  mexSolverOut sout = solver_.Solve<FBstabMpc::ProblemData,FBstabMpc::Variable>(qp, &x);
   
   plhs[0] = sout;
   plhs[1] = x; //mxDuplicateArray(prhs[1]);
@@ -100,19 +100,19 @@ mexFBstabMpc::ProblemData::ProblemData(const mxArray* pmx)
     nu = *mxGetInt32s(mxGetProperty(pmx,0,"nu"));
     nc = *mxGetInt32s(mxGetProperty(pmx,0,"nc"));
     
-    Q = std::vector<Eigen::MatrixXd>(N+1);
-    R = std::vector<Eigen::MatrixXd>(N+1);
-    S = std::vector<Eigen::MatrixXd>(N+1);
-    q = std::vector<Eigen::VectorXd>(N+1);
-    r = std::vector<Eigen::VectorXd>(N+1);
+    Q = MatrixSequence(N+1, nx, nx);
+    R = MatrixSequence(N+1, nu, nu);
+    S = MatrixSequence(N+1, nu, nx);
+    q = MatrixSequence(N+1, nx);
+    r = MatrixSequence(N+1, nu);
     
-    A = std::vector<Eigen::MatrixXd>(N);
-    B = std::vector<Eigen::MatrixXd>(N);
-    c = std::vector<Eigen::VectorXd>(N);
+    A = MatrixSequence(N, nx, nx);
+    B = MatrixSequence(N, nx, nu);
+    c = MatrixSequence(N, nx);
     
-    E = std::vector<Eigen::MatrixXd>(N+1);
-    L = std::vector<Eigen::MatrixXd>(N+1);
-    d = std::vector<Eigen::VectorXd>(N+1);
+    E = MatrixSequence(N+1, nc, nx);
+    L = MatrixSequence(N+1, nc, nu);
+    d = MatrixSequence(N+1, nc);
     
     mxArray* _Q = mxGetProperty(pmx,0,"Q");
     mxArray* _R = mxGetProperty(pmx,0,"R");
@@ -128,21 +128,21 @@ mexFBstabMpc::ProblemData::ProblemData(const mxArray* pmx)
     
     for (int _i=0; _i < N+1; _i++)
     {
-      Q[_i] = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_Q)+_i*nx*nx, nx, nx);
-      R[_i] = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_R)+_i*nu*nu, nu, nu);
-      S[_i] = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_S)+_i*nu*nx, nu, nx);
-      q[_i] = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_q)+_i*nx, nx);
-      r[_i] = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_r)+_i*nu, nu);
-      
-      E[_i] = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_E)+_i*nc*nx, nc, nx);
-      L[_i] = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_L)+_i*nc*nu, nc, nu);
-      d[_i] = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_d)+_i*nc, nc);
-      
+      Q(_i) = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_Q)+_i*nx*nx, nx, nx);
+      R(_i) = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_R)+_i*nu*nu, nu, nu);
+      S(_i) = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_S)+_i*nu*nx, nu, nx);
+      q(_i) = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_q)+_i*nx, nx);
+      r(_i) = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_r)+_i*nu, nu);
+
+      E(_i) = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_E)+_i*nc*nx, nc, nx);
+      L(_i) = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_L)+_i*nc*nu, nc, nu);
+      d(_i) = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_d)+_i*nc, nc);
+
       if ( _i >= N ) continue;
-      
-      A[_i] = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_A)+_i*nx*nx, nx, nx);
-      B[_i] = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_B)+_i*nx*nu, nx, nu);
-      c[_i] = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_c)+_i*nx, nx);
+
+      A(_i) = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_A)+_i*nx*nx, nx, nx);
+      B(_i) = Eigen::Map<Eigen::MatrixXd>(mxGetDoubles(_B)+_i*nx*nu, nx, nu);
+      c(_i) = Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_c)+_i*nx, nx);
     }
     
     mxArray* _x0 = mxGetProperty(pmx,0,"x0");
