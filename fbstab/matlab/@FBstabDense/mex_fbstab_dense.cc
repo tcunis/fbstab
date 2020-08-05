@@ -9,61 +9,60 @@ using namespace fbstab;
 
 void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
-  mexObjectHandler<mexFBstabMpc>(nlhs, plhs, nrhs, prhs);
+  mexObjectHandler<mexFBstabDense>(nlhs, plhs, nrhs, prhs);
 }
 
 
-/** mexFBstabMpc */
-mexFBstabMpc::mexFBstabMpc(const mxArray* mxObj, int nrhs, const mxArray* prhs[])
+/** mexFBstabDense */
+mexFBstabDense::mexFBstabDense(const mxArray* mxObj, int nrhs, const mxArray* prhs[])
 : mexFBstabBase(),
   solver_(
     GetMX(int,0,nrhs,prhs),
     GetMX(int,1,nrhs,prhs),
-    GetMX(int,2,nrhs,prhs),
-    GetMX(int,3,nrhs,prhs)
+    GetMX(int,2,nrhs,prhs)
   )
 {
-  if ( nrhs != 4 )
-    throw mexRuntimeError(get_classname() + ":invalidArguments", "Constructor requires four (4) arguments.");
+  if ( nrhs != 3 )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "Constructor requires three (3) arguments.");
 }
 
-void mexFBstabMpc::Solve(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+void mexFBstabDense::Solve(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
   if ( nrhs != 2 )
     throw mexRuntimeError(get_classname() + ":invalidArguments", "Solve method expects two (2) input arguments.");
   if ( nlhs != 2 )
     throw mexRuntimeError(get_classname() + ":invalidArguments", "Solve method expects two (2) output argument.");
-  if ( !mxIsClass(prhs[0],"FBstabMpc.ProblemData") )
-    throw mexRuntimeError(get_classname() + ":invalidArguments", "First argument of Solve method must be FBstabMpc.ProblemData object.");
-  if ( !mxIsClass(prhs[1],"FBstabMpc.Variable") )
-    throw mexRuntimeError(get_classname() + ":invalidArguments", "Second argument of Solve method must be FBstabMpc.Variable object.");
+  if ( !mxIsClass(prhs[0],"FBstabDense.ProblemData") )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "First argument of Solve method must be FBstabDense.ProblemData object.");
+  if ( !mxIsClass(prhs[1],"FBstabDense.Variable") )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "Second argument of Solve method must be FBstabDense.Variable object.");
   
   // else
-  mexFBstabMpc::ProblemData qp(prhs[0]);
-  mexFBstabMpc::Variable x(prhs[1]);
+  mexFBstabDense::ProblemData qp(prhs[0]);
+  mexFBstabDense::Variable x(prhs[1]);
   
-  mexSolverOut sout = solver_.Solve<FBstabMpc::ProblemDataRef,FBstabMpc::VariableRef>(qp, &x);
-  
+  mexSolverOut sout = solver_.Solve<FBstabDense::ProblemDataRef,FBstabDense::VariableRef>(qp, &x);
+
   plhs[0] = sout;
   plhs[1] = x; //mxDuplicateArray(prhs[1]);
 }
 
-void mexFBstabMpc::UpdateOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+void mexFBstabDense::UpdateOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
   if ( nrhs != 1 )
     throw mexRuntimeError(get_classname() + ":invalidArguments", "UpdateOptions expects one (1) input argument.");
   if ( nlhs != 0 )
     throw mexRuntimeError(get_classname() + ":invalidArguments", "UpdateOptions does not expect output arguments.");
-  if ( !mxIsClass(prhs[0],"FBstabMpc.Options") )
-    throw mexRuntimeError(get_classname() + ":invalidArguments", "First argument of UpdateOptions must be FBstabMpc.Options object.");
+  if ( !mxIsClass(prhs[0],"FBstabDense.Options") )
+    throw mexRuntimeError(get_classname() + ":invalidArguments", "First argument of UpdateOptions must be FBstabDense.Options object.");
     
   // else
-  mexFBstabMpc::Options options(prhs[0]);
+  mexFBstabDense::Options options(prhs[0]);
   
   solver_.UpdateOptions(options);
 }
 
-void mexFBstabMpc::ReliableOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+void mexFBstabDense::ReliableOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
   if ( nrhs != 0 )
     throw mexRuntimeError(get_classname() + ":invalidArguments", "ReliableOptions does not expect input arguments.");
@@ -71,12 +70,12 @@ void mexFBstabMpc::ReliableOptions(const mxArray* mxObj, int nlhs, mxArray* plhs
     throw mexRuntimeError(get_classname() + ":invalidArguments", "ReliableOptions expects one (1) output argument.");
   
   // else
-  mexFBstabMpc::Options options = solver_.ReliableOptions();
+  mexFBstabDense::Options options = solver_.ReliableOptions();
   
   plhs[0] = options;
 }
 
-void mexFBstabMpc::DefaultOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+void mexFBstabDense::DefaultOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
   if ( nrhs != 0 )
     throw mexRuntimeError(get_classname() + ":invalidArguments", "DefaultOptions does not expect input arguments.");
@@ -84,54 +83,37 @@ void mexFBstabMpc::DefaultOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[
     throw mexRuntimeError(get_classname() + ":invalidArguments", "DefaultOptions expects one (1) output argument.");
   
   // else
-  mexFBstabMpc::Options options = solver_.DefaultOptions();
+  mexFBstabDense::Options options = solver_.DefaultOptions();
   
   plhs[0] = options;
 }
 
-mexFBstabMpc::ProblemData::ProblemData(const mxArray* pmx)
+mexFBstabDense::ProblemData::ProblemData(const mxArray* pmx)
 {
     if ( !mxIsLogicalScalarTrue(mxGetProperty(pmx,0,"isvalid")) )
       throw mexRuntimeError(get_classname() + ":invalidArguments", "Invalid problem data.");
     
     // else
-    N = *mxGetInt32s(mxGetProperty(pmx,0,"N"));
-    nx = *mxGetInt32s(mxGetProperty(pmx,0,"nx"));
-    nu = *mxGetInt32s(mxGetProperty(pmx,0,"nu"));
-    nc = *mxGetInt32s(mxGetProperty(pmx,0,"nc"));
+    nz = *mxGetInt32s(mxGetProperty(pmx,0,"nz"));
+    nl = *mxGetInt32s(mxGetProperty(pmx,0,"nl"));
+    nv = *mxGetInt32s(mxGetProperty(pmx,0,"nv"));
     
-    mxArray* _Q = mxGetProperty(pmx,0,"Q");
-    mxArray* _R = mxGetProperty(pmx,0,"R");
-    mxArray* _S = mxGetProperty(pmx,0,"S");
-    mxArray* _q = mxGetProperty(pmx,0,"q");
-    mxArray* _r = mxGetProperty(pmx,0,"r");
+    mxArray* _H = mxGetProperty(pmx,0,"H");
+    mxArray* _G = mxGetProperty(pmx,0,"G");
     mxArray* _A = mxGetProperty(pmx,0,"A");
-    mxArray* _B = mxGetProperty(pmx,0,"B");
-    mxArray* _c = mxGetProperty(pmx,0,"c");
-    mxArray* _E = mxGetProperty(pmx,0,"E");
-    mxArray* _L = mxGetProperty(pmx,0,"L");
-    mxArray* _d = mxGetProperty(pmx,0,"d");
+    mxArray* _f = mxGetProperty(pmx,0,"f");
+    mxArray* _h = mxGetProperty(pmx,0,"h");
+    mxArray* _b = mxGetProperty(pmx,0,"b");
     
-    Q = MapMatrixSequence(mxGetDoubles(_Q), N+1, nx, nx);
-    R = MapMatrixSequence(mxGetDoubles(_R), N+1, nu, nu);
-    S = MapMatrixSequence(mxGetDoubles(_S), N+1, nu, nx);
-    q = MapMatrixSequence(mxGetDoubles(_q), N+1, nx);
-    r = MapMatrixSequence(mxGetDoubles(_r), N+1, nu);
-    
-    A = MapMatrixSequence(mxGetDoubles(_A), N, nx, nx);
-    B = MapMatrixSequence(mxGetDoubles(_B), N, nx, nu);
-    c = MapMatrixSequence(mxGetDoubles(_c), N, nx);
-    
-    E = MapMatrixSequence(mxGetDoubles(_E), N+1, nc, nx);
-    L = MapMatrixSequence(mxGetDoubles(_L), N+1, nc, nu);
-    d = MapMatrixSequence(mxGetDoubles(_d), N+1, nc);
-    
-    mxArray* _x0 = mxGetProperty(pmx,0,"x0");
-    
-    new (&x0) Eigen::Map<const Eigen::VectorXd>(mxGetDoubles(_x0), nx);
+    new (&H) Eigen::Map<const Eigen::MatrixXd>(mxGetDoubles(_H), nz, nz);
+    new (&G) Eigen::Map<const Eigen::MatrixXd>(mxGetDoubles(_G), nl, nz);
+    new (&A) Eigen::Map<const Eigen::MatrixXd>(mxGetDoubles(_A), nv, nz);
+    new (&f) Eigen::Map<const Eigen::VectorXd>(mxGetDoubles(_f), nz);
+    new (&h) Eigen::Map<const Eigen::VectorXd>(mxGetDoubles(_h), nl);
+    new (&b) Eigen::Map<const Eigen::VectorXd>(mxGetDoubles(_b), nv);
 }
 
-mexFBstabMpc::Variable::Variable(const mxArray* _prhs)
+mexFBstabDense::Variable::Variable(const mxArray* _prhs)
 : pmx(_prhs)
 {
   if ( !mxIsLogicalScalarTrue(mxGetProperty(pmx,0,"isvalid")) )
@@ -153,7 +135,7 @@ mexFBstabMpc::Variable::Variable(const mxArray* _prhs)
   new (&y) Eigen::Map<Eigen::VectorXd>(mxGetDoubles(_y), nv);
 }
 
-mexFBstabMpc::Variable::operator mxArray* () const
+mexFBstabDense::Variable::operator mxArray* () const
 {
   mxArray* _plhs = mxDuplicateArray(pmx);
   

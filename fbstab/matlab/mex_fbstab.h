@@ -3,6 +3,7 @@
 #include "mex.h"
 
 #include "fbstab/fbstab_mpc.h"
+#include "fbstab/fbstab_dense.h"
 
 class mexFBstabBase
 {
@@ -76,4 +77,45 @@ protected:
   
 private:
   fbstab::FBstabMpc solver_;
+};
+
+class mexFBstabDense : public mexFBstabBase
+{
+public:
+  struct ProblemData : public fbstab::FBstabDense::ProblemDataRef {
+    ProblemData(const mxArray*);
+  
+    int nz, nl, nv;
+  };
+  
+  struct Variable : public fbstab::FBstabDense::VariableRef {
+    Variable(const mxArray*);
+    
+    operator mxArray*() const;
+    
+    int nz, nl, nv;
+    
+    private:
+      const mxArray* pmx;
+  };
+  
+  struct Options : public fbstab::FBstabDense::Options, public mexAlgorithmParameters {
+    Options(const fbstab::FBstabDense::Options& opts) : mexAlgorithmParameters(opts) {}
+    Options(const mxArray* prhs) : mexAlgorithmParameters(prhs) {}
+  };
+
+  static std::string get_classname() { return "FBstabDense"; }
+  
+  mexFBstabDense(const mxArray* mxObj, int nrhs, const mxArray* prhs[]);
+  
+protected:
+  void Solve(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+  
+  void UpdateOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+  
+  void DefaultOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+  void ReliableOptions(const mxArray* mxObj, int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+  
+private:
+  fbstab::FBstabDense solver_;
 };

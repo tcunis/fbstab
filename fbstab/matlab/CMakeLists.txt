@@ -30,3 +30,4 @@ target_include_directories(libmexutils INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/inc
 target_link_libraries(libmexutils INTERFACE libmex)
 
 add_subdirectory(@FBstabMpc)
+add_subdirectory(@FBstabDense)
