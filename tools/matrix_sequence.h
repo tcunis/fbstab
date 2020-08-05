@@ -100,7 +100,7 @@ class MapMatrixSequence {
    * @param[in] nrows number of rows in each matrix > 0
    * @param[in] ncols number of columns in each matrix > 0
    */
-  MapMatrixSequence(const double* data, int len, int nrows, int ncols)
+  MapMatrixSequence(const double* data, int len, int nrows, int ncols = 1)
       : data_(data) {
     if (len <= 0) {
       throw std::runtime_error(
