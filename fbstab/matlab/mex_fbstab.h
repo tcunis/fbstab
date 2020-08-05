@@ -40,16 +40,18 @@ struct mexAlgorithmParameters : virtual public fbstab::AlgorithmParameters
 class mexFBstabMpc : public mexFBstabBase
 {
 public:
-  struct ProblemData : public fbstab::FBstabMpc::ProblemData {
+  struct ProblemData : public fbstab::FBstabMpc::ProblemDataRef {
     ProblemData(const mxArray*);
   
     int N, nx, nu, nc;
   };
   
-  struct Variable : public fbstab::FBstabMpc::Variable {
-    Variable(const mxArray*, int N, int nx, int nu, int nc);
+  struct Variable : public fbstab::FBstabMpc::VariableRef {
+    Variable(const mxArray*);
     
     operator mxArray*() const;
+    
+    int nz, nl, nv;
     
     private:
       const mxArray* pmx;
