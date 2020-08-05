@@ -68,6 +68,14 @@ FBstabDense::ProblemData::ProblemData(int nz, int nl, int nv) {
   b.resize(nv);
 }
 
+FBstabDense::ProblemDataRef::ProblemDataRef()
+    : H(nullptr,0,0),
+      G(nullptr,0,0),
+      A(nullptr,0,0),
+      f(nullptr,0),
+      h(nullptr,0),
+      b(nullptr,0) {}
+
 FBstabDense::ProblemDataRef::ProblemDataRef(
     const Eigen::Map<Eigen::MatrixXd>* H_,
     const Eigen::Map<Eigen::VectorXd>* f_,
@@ -88,6 +96,12 @@ FBstabDense::Variable::Variable(int nz, int nl, int nv) {
   v = Eigen::VectorXd::Zero(nv);
   y = Eigen::VectorXd::Zero(nv);
 }
+
+FBstabDense::VariableRef::VariableRef()
+    : z(nullptr,0),
+      l(nullptr,0),
+      v(nullptr,0),
+      y(nullptr,0) {}
 
 FBstabDense::VariableRef::VariableRef(Eigen::Map<Eigen::VectorXd>* z_,
                                       Eigen::Map<Eigen::VectorXd>* l_,

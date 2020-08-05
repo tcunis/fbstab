@@ -65,7 +65,6 @@ class FBstabDense {
 
   /** Problem data using preallocated memory */
   struct ProblemDataRef {
-    ProblemDataRef() = delete;
     ProblemDataRef(const Eigen::Map<Eigen::MatrixXd>* H_,
                    const Eigen::Map<Eigen::VectorXd>* f_,
                    const Eigen::Map<Eigen::MatrixXd>* G_,
@@ -79,6 +78,10 @@ class FBstabDense {
     Eigen::Map<const Eigen::VectorXd> f;  /// nz linear cost.
     Eigen::Map<const Eigen::VectorXd> h;  /// nl equality rhs
     Eigen::Map<const Eigen::VectorXd> b;  /// nv inequality rhs.
+    
+  protected:
+    ProblemDataRef();
+
   };
 
   /** Structure to hold the initial guess. */
@@ -93,7 +96,6 @@ class FBstabDense {
 
   /** An input structure for reusing preallocated memory. */
   struct VariableRef {
-    VariableRef() = delete;
     VariableRef(Eigen::Map<Eigen::VectorXd>* z_,
                 Eigen::Map<Eigen::VectorXd>* l_,
                 Eigen::Map<Eigen::VectorXd>* v_,
@@ -104,6 +106,9 @@ class FBstabDense {
     Eigen::Map<Eigen::VectorXd> l;  /// Equality duals
     Eigen::Map<Eigen::VectorXd> v;  /// Inequality duals in \reals^nv.
     Eigen::Map<Eigen::VectorXd> y;  /// y = b-Az, in \reals^nv.
+    
+  protected:
+    VariableRef();
   };
 
   /**
