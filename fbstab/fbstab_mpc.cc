@@ -45,6 +45,9 @@ FBstabMpc::Variable::Variable(int N, int nx, int nu, int nc) {
 FBstabMpc::Variable::Variable(const Eigen::Vector4d& s)
     : Variable(s(0), s(1), s(2), s(3)) {}
 
+FBstabMpc::VariableRef::VariableRef()
+    : z(nullptr,0), l(nullptr,0), v(nullptr,0), y(nullptr,0) {}
+
 FBstabMpc::VariableRef::VariableRef(Eigen::Map<Eigen::VectorXd> z_,
                                     Eigen::Map<Eigen::VectorXd> l_,
                                     Eigen::Map<Eigen::VectorXd> v_,

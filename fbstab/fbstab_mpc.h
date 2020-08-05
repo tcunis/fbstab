@@ -147,6 +147,9 @@ class FBstabMpc {
     Eigen::Map<Eigen::VectorXd> l;  /// Equality duals in R^nl
     Eigen::Map<Eigen::VectorXd> v;  /// Inequality duals in R^nv.
     Eigen::Map<Eigen::VectorXd> y;  /// Constraint margin y = b-Az, in R^nv.
+    
+  protected:
+    VariableRef();
   };
 
   /** A Structure to hold options */
